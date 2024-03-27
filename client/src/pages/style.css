@@ -1,0 +1,35 @@
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Set the background of the entire page to light grey */
+body {
+  background-color: #d3d3d3; /* Light grey background */
+}
+
+/* Style for the white box with shadow */
+.form-box {
+  background-color: white; /* White background for the form */
+  max-width: 500px;
+  margin: 20px auto; /* Center the box */
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
+  border-radius: 8px; /* Rounded corners */
+}
+.card-title {
+  font-weight: bold;
+  font-size: 30pt;
+  color: #005a5a; 
+}
+/* Define styles for clickable text */
+.clickable-text {
+  color: #005a5a; 
+  text-decoration: none;
+  cursor: pointer;
+  font-size: medium;
+}
+
+.clickable-text:hover {
+  text-decoration: underline;
+  color: rgb(0, 0, 146)
+}
