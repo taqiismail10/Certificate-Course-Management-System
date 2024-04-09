@@ -21,9 +21,9 @@ const CreateCourseForm: React.FC = () => {
     }));
   };
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  // const [startDate, setStartDate] = useState("");
+  // const [endDate, setEndDate] = useState("");
+  const [errorMessage] = useState("");
 
   //   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //     setStartDate(e.target.value);
@@ -38,11 +38,15 @@ const CreateCourseForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const startDateObj = new Date(startDate);
-    const endDateObj = new Date(endDate);
+    const startDateObj = new Date(course.startDate);
+    const endDateObj = new Date(course.endDate);
 
     if (startDateObj > endDateObj) {
       alert("Start date cannot be after end date.");
+      return;
+    }
+    if (!course.startDate || !course.endDate) {
+      alert("Please provide both start and end dates.");
       return;
     }
     console.log(course);
@@ -161,9 +165,9 @@ const CreateCourseForm: React.FC = () => {
                     required
                   >
                     <option value="">Select Level</option>
-                    <option value="Beginner">Beginner</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
                   </select>
                 </div>
                 {errorMessage && (

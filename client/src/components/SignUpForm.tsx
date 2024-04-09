@@ -47,19 +47,34 @@ const SignUpForm = () => {
     }));
   };
 
+  // const handleClickSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   try {
+  //     console.log(user);
+  //     const response = await axios.post(
+  //       "http://localhost:5000/signup",
+  //       user
+  //     );
+  //     console.log(response.data.userId);
+  //     if (user.role === "student") {
+  //       navigate(`/student-dashboard/${response.data.userId}`);
+  //     } else if (user.role === "teacher") {
+  //       navigate(`/teacher-dashboard/${response.data.userId}`);
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+
+
   const handleClickSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      console.log(user);
-      const response = await axios.post(
-        "http://localhost:5000/signup",
-        user
-      );
-      console.log(response.data.userId);
+      const response = await axios.post("http://localhost:5000/signup", user);
       if (user.role === "student") {
-        navigate(`/student-dashboard/${response.data.userId}`);
+        navigate(`/student-dashboard/${response.data.studentid}`);
       } else if (user.role === "teacher") {
-        navigate(`/teacher-dashboard/${response.data.userId}`);
+        navigate(`/teacher-dashboard/${response.data.teacherid}`);
       }
     } catch (err) {
       console.error(err);
@@ -150,7 +165,7 @@ const SignUpForm = () => {
                         name="lastName"
                         className="form-control"
                         id="lastName"
-                        value = {user.lastName}
+                        value={user.lastName}
                         onChange={handleChange}
                         required
                       />
@@ -165,7 +180,7 @@ const SignUpForm = () => {
                         name="email"
                         className="form-control"
                         id="email"
-                        value = {user.email}
+                        value={user.email}
                         onChange={handleChange}
                         required
                       />
@@ -180,7 +195,7 @@ const SignUpForm = () => {
                         className="form-control"
                         name='password'
                         id="password"
-                        value = {user.password}
+                        value={user.password}
                         onChange={handleChange}
                         required
                       />
@@ -199,7 +214,7 @@ const SignUpForm = () => {
                           value={user.designation}
                           onChange={handleChange}
                           required
-                          >
+                        >
                           {/* <option value="">Select Designation</option> */}
                           <option value="Select Designation">
                             Select Designation

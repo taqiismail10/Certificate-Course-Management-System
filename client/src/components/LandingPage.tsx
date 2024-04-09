@@ -4,18 +4,21 @@ import Navbar_temp from './Navbar_temp'
 import HeroSection from './HeroSection'
 import AboutSection from './AboutSection'
 import CourseList_nonAdmin from './CourseList_nonAdmin'
+import CourseBox from './CourseBox/CourseBox'
 
 const Test = () => {
   return (
-    <div style={{
-        backgroundImage: `url('bg_4.png')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}>
-    <Navbar_temp/>
-    <HeroSection></HeroSection>
-    <CourseList_nonAdmin/>
-    <AboutSection></AboutSection>
+
+    <div className="container-fluid py-4" style={{
+      backgroundImage: `url('bg_8(1).jpg')`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    }}>
+      <Navbar_temp />
+      <HeroSection></HeroSection>
+      {/* <CourseList_nonAdmin/> */}
+      <CourseBox ></CourseBox>
+      <AboutSection></AboutSection>
     </div>
   )
 }

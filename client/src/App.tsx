@@ -61,3 +61,26 @@ function App() {
 }
 
 export default App;
+
+// import React from 'react';
+// import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+// import LoginForm from "./components/LoginForm.tsx";
+// import TeacherDashboard from "./components/TeacherDashboard.tsx";
+// import StudentDashboard from "./components/StudentDashboard.tsx";
+// import PrivateRoute from './PrivateRoute'; // Import the PrivateRoute component
+
+// const App: React.FC = () => {
+//   return (
+//     <Router>
+//       <Switch>
+//         <Route path="/login" component={LoginPage} />
+//         <PrivateRoute path="/teacher-dashboard" component={TeacherDashboard} roles={['teacher']} />
+//         <PrivateRoute path="/student-dashboard" component={StudentDashboard} roles={['student']} />
+//         <Redirect to="/login" />
+//       </Switch>
+//     </Router>
+//   );
+// }
+
+// export default App;
+

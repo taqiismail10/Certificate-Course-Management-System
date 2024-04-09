@@ -21,7 +21,7 @@ const LoginForm = () => {
   });
 
   const [role, setRole] = useState<string>("student");
-  const [loginTitle, setLoginTitle] = useState<string>("student Login");
+  const [loginTitle, setLoginTitle] = useState<string>("Student Login");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -37,26 +37,36 @@ const LoginForm = () => {
 
       const response = await axios.post(
         "http://localhost:5000/login",
-        { email:Credentials.email, password:Credentials.password, role }
+        { email: Credentials.email, password: Credentials.password, role }
       );
       console.log(Credentials.email);
       console.log(Credentials.password);
       console.log(role);
-      // Extract userid from response data if available
-      const { userid } = response.data;
-      console.log(userid);
-      // Redirect to corresponding dashboard upon successful authentication
-      if (userid) {
 
-        if (role === "teacher") {
-          navigate(`/teacher-dashboard/${userid}`); // Redirect to teacher dashboard
-        } else if (role === "student") {
-          navigate(`/student-dashboard/${userid}`); // Redirect to student dashboard
-        }
-      } else {
+
+      // Extract userid from response data if available
+      // console.log(userid);
+      // Redirect to corresponding dashboard upon successful authentication
+      // if (userid) {
+
+      if (role === "teacher") {
+        const { teacherid } = response.data;
+        console.log(teacherid);
+        navigate(`/teacher-dashboard/${teacherid}`); // Redirect to teacher dashboard
+      } else if (role === "student") {
+        const { studentid } = response.data;
+        console.log(studentid);
+        navigate(`/student-dashboard/${studentid}`); // Redirect to student dashboard
+      }
+      else {
         console.log("User does not exist");
         // Handle case where user does not exist (e.g., show error message)
       }
+      // } 
+      // else {
+      //   console.log("User does not exist");
+      //   // Handle case where user does not exist (e.g., show error message)
+      // }
     } catch (err) {
       console.error(err);
     }
@@ -71,7 +81,7 @@ const LoginForm = () => {
   const handleClickRoleSwitch = () => {
     setRole((prevRole) => (prevRole === "student" ? "teacher" : "student"));
     setLoginTitle((prevTitle) =>
-      prevTitle === "student Login" ? "teacher Login" : "student Login"
+      prevTitle === "Student Login" ? "Teacher Login" : "Student Login"
     );
   };
 
