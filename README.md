@@ -1,2 +1,2 @@
 # Certificate-Course-Management-System
-"CCMS: Centralized platform for accessing top-tier university courses. Explore, enroll, and earn certificates from renowned faculty. Broadening access to quality education."
+CCMS is a web application database system designed for individuals seeking access to top-tier university courses and expert instruction. It offers a centralized platform for course exploration and enrollment, featuring courses from prestigious universities and renowned faculty members. Users receive certificates upon course completion, enhancing their learning experiences. Ongoing development aims to broaden access to high-quality education, fostering inclusivity in learning.
