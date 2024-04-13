@@ -24,9 +24,6 @@ app.use(express.json());
 
 // Routes
 
-app.use('/authentication', require('./routes/authentication'));
-app.use('/dashboard', require('./routes/dashboard'));
-
 // Get upcoming courses
 app.get("/upcoming-courses", async (req, res) => {
   try {
