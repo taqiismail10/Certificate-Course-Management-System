@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../pages/style.css";
+import '../pages/style.css';
+// import 'src\pages\style.css';
 import Navbar_temp from "./Navbar_temp";
 
 const customStyles = {

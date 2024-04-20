@@ -87,7 +87,7 @@ const LoginForm = () => {
 
   return (
     <div
-      className="container-fluid vh-100"
+      className="container-fluid flex-fill py-5"
       style={{
         backgroundImage: `url('bg_1.jpg')`,
         backgroundSize: "cover",

@@ -123,7 +123,7 @@ const SignUpForm = () => {
 
   return (
     <div
-      className="container-fluid flex-fill "
+      className="container-fluid flex-fill py-5"
       style={{
         backgroundImage: `url('bg_1.jpg')`,
         backgroundSize: "cover",

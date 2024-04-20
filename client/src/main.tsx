@@ -2,14 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 
 // import Courses from "./pages/Courses.tsx";
-import Navbar from "./components/Navbar.tsx";
+// import Navbar from "./components/Navbar.tsx";
 
 import SignUpForm from "./components/SignUpForm.tsx";
 import SignUpForm_2 from "./components/SignUpForm_2.tsx";
@@ -18,11 +18,15 @@ import StudentDashboard from "./components/StudentDashboard.tsx";
 import LandingPage from "./components/LandingPage.tsx";
 import TeacherDashboard from "./components/TeacherDashboard.tsx";
 import AdminDashboard from "./components/AdminDashboard.tsx";
-import SignUp_temp from "./components/SignUp_temp.tsx";
+// import SignUp_temp from "./components/SignUp_temp.tsx";
 import AdminLoginForm from "./components/AdminLoginForm.tsx";
 // import TeacherProfile from "./components/TeacherProfile.tsx";
 import CreateCourseForm from "./components/CreateCourseForm.tsx";
+import CoursePage from "./components/CourseDetails/CoursePage.tsx";
+import Child1 from "./components/Child1.tsx";
 
+// Define userRole here
+const userRole = "";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +72,14 @@ const router = createBrowserRouter([
   {
     path: "/course-create",
     element: <CreateCourseForm/>
+},
+  {
+    // path: "/course-page/:courseid/:studentid?",
+    path: "/course-page/:courseid",
+    element: <CoursePage/>
+  },{
+    path: "/child1/:studentid",
+    element: <Child1/>
   },
 ]);
 

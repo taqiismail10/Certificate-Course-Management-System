@@ -1,7 +1,6 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 interface Course {
   courseid: number;
@@ -17,23 +16,30 @@ interface EnrolledCoursesProps {
   studentid: string;
 }
 
-const EnrolledCourses: React.FC<EnrolledCoursesProps> = ({ studentid }) => {
-
+const EnrolledCourses = ({ studentid }: EnrolledCoursesProps) => {
   // Dummy data for assigned courses
-  // 
+
+  //
+  const isEnrolled = "true";
+  const userRole = "student";
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
 
   useEffect(() => {
     // Fetch assigned courses for the teacher with the provided teacherId
-    axios.get(`http://localhost:5000/student-dashboard/${studentid}`)
-      .then(response => {
+    axios
+      .get(`http://localhost:5000/student-dashboard/${studentid}`)
+      .then((response) => {
         setEnrolledCourses(response.data.enrolledCourses);
       })
-      .catch(error => {
-        console.error('Error fetching assigned courses:', error);
+      .catch((error) => {
+        console.error("Error fetching assigned courses:", error);
       });
-  }, [studentid]); // Re-run effect whenever teacherId changes
 
+
+    return () => {
+      // Cancel any pending requests (if using Axios cancel tokens)
+    };
+  }, [studentid]); // Re-run effect whenever teacherId changes
 
   // done by abbas
   // const EnrolledCourses: React.FC = () => {
@@ -64,14 +70,21 @@ const EnrolledCourses: React.FC<EnrolledCoursesProps> = ({ studentid }) => {
     <div className="col-md-12">
       <div className="card mb-4">
         <div className="card-body">
-          <h5 className="card-title mb-3" style={{ fontSize: "30px", fontWeight: "normal" }}>
+          <h5
+            className="card-title mb-3"
+            style={{ fontSize: "30px", fontWeight: "normal" }}
+          >
             Enrolled Courses
           </h5>
           <div style={{ maxHeight: "200px", overflowY: "scroll" }}>
+            {/* studentId: {studentid} */}
             <ul className="list-group list-group-flush">
               {enrolledCourses.map((course) => (
-                <li key={course.courseid} className="list-group-item d-flex justify-content-between align-items-center">
-                  <Link to={`/course-details/${course.courseid}`}>
+                <li
+                  key={course.courseid}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                >
+                  <Link to={`/course-page/${course.courseid}?studentid=${studentid}&isEnrolled=${isEnrolled}&userRole=${userRole}`} style={{ textDecoration: "none", color: "#005a5a" }}>
                     {course.coursename} ({course.level})
                   </Link>
                 </li>
@@ -80,7 +93,7 @@ const EnrolledCourses: React.FC<EnrolledCoursesProps> = ({ studentid }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

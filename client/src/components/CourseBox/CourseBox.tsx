@@ -1,22 +1,25 @@
+import AssignedCoursesBox from "./AssignedCoursesBox";
+import EnrolledCoursesBox from "./EnrolledCoursesBox";
 import OfferedCoursesBox from "./OfferedCoursesBox";
 import UpcomingCoursesBox from "./UpcomingCoursesBox";
-import EnrolledCoursesBox from "./EnrolledCoursesBox";
-import AssignedCoursesBox from "./AssignedCoursesBox";
 
 interface CoursesBoxProps {
   userRole?: "teacher" | "student";
   teacherId?: string; // Add teacherId as a prop
-
+  teacherName?: string;
+  studentId?: string; // Add teacherId as a prop
 }
 
-const CoursesBox = ({ userRole, teacherId }: CoursesBoxProps) => {
+const CoursesBox = ({ userRole, teacherId, teacherName = '', studentId }: CoursesBoxProps) => {
   let numCourseBoxes = 2; // Default number of course boxes for signed out users
   if (userRole === "teacher" || userRole === "student") {
     numCourseBoxes = 3; // Number of course boxes for teachers and students
   }
+  const isEnrolled = "false"
+  const isAssigned = "false"
+  
 
   const colSize = Math.floor(12 / numCourseBoxes);
-
   return (
     <div className="container ">
       <div
@@ -27,20 +30,26 @@ const CoursesBox = ({ userRole, teacherId }: CoursesBoxProps) => {
         }}
       >
         <h2 className="card-title mt-3 text-center">Courses</h2>
+        {/* userRole = {userRole}
+        <br />
+        isAssigned = {isAssigned}
+        <br />
+        isEnrolled = {isEnrolled} */}
         <div className="card-body">
           <div className="row">
             <div className={`col-md-${colSize}`}>
-              <OfferedCoursesBox />
+              <OfferedCoursesBox userRole={userRole} studentid = {studentId} isEnrolled={isEnrolled} isAssigned={isAssigned} />
             </div>
             <div className={`col-md-${colSize}`}>
-              <UpcomingCoursesBox />
+              <UpcomingCoursesBox userRole={userRole} studentid = {studentId} isEnrolled={isEnrolled} isAssigned={isAssigned} />
             </div>
             {(userRole === "teacher" || userRole === "student") && (
               <div className={`col-md-${colSize}`}>
-                {userRole === "teacher" ? (
-                  <AssignedCoursesBox teacherId={teacherId} />
+                {userRole === "teacher" && teacherId ? (
+                  <AssignedCoursesBox teacherid={teacherId} teacherName={teacherName} />
                 ) : (
-                  <EnrolledCoursesBox />
+                  userRole === "student" && studentId && (
+                    <EnrolledCoursesBox studentid={studentId} />)
                 )}
               </div>
             )}

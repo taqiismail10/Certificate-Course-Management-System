@@ -1,6 +1,7 @@
 // Import required modules
 
 const express = require("express");
+const axios = require("axios"); // For Node.js environment
 
 const dotenv = require("dotenv");
 dotenv.config({ path: "/home/tim_10/TIM/project/Final_project/.env" });
@@ -88,6 +89,52 @@ app.post("/admin/assign-courses", async (req, res) => {
     res.status(500).json({ error: "Server Error" });
   }
 });
+app.get("/teachers-list", async(req, res)=>{
+    try{
+      const query = "SELECT * FROM teachers";
+      const result = await pool.query(query);
+      res.status(201).json(result.rows);
+      
+    }
+    catch(error){
+      console.log(error.message);
+      res.status(500).send("Server Error");
+    }
+});
+app.get("/unassigned-courses", async (req, res) => {
+  try {
+    const query = `
+      SELECT c.*
+      FROM courses c
+      LEFT JOIN teacherstakecourses ttc ON c.courseid = ttc.courseid
+      WHERE ttc.courseid IS NULL
+        AND c.startdate <= CURRENT_DATE
+      ORDER BY c.startdate DESC`;
+    const result = await pool.query(query);
+    res.status(201).json(result.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+});
+
+app.get("/assigned-courses", async (req, res) => {
+  try {
+    const query = `
+      SELECT c.*
+      FROM courses c
+      INNER JOIN teacherstakecourses ttc ON c.courseid = ttc.courseid
+      WHERE c.startdate <= CURRENT_DATE
+      ORDER BY c.startdate ASC `;
+    const result = await pool.query(query);
+    res.status(201).json(result.rows);
+    // console.log(result.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+});
+
 // Create a new course
 app.post("/course-create", async (req, res) => {
   try {
@@ -118,24 +165,30 @@ app.post("/course-create", async (req, res) => {
   }
 });
 
-// Get course information including assigned teachers
+app.post("/enroll-course", async (req, res) => {
+  try {
+    const { courseid, studentid } = req.body;
+    const insertQuery = `INSERT INTO studentsenrollcourses (courseid, studentid) VALUES ($1, $2) RETURNING courseid, studentid`;
+    const result = await pool.query(insertQuery, [courseid, studentid]);
 
-// Assign a teacher to a course
-// app.post('/courses/:courseId/assign-teacher', async (req, res) => {
-//   const courseId = req.params.courseId;
-//   const { teacherid } = req.body;
-//   try {
-//     const insertQuery = 'INSERT INTO teacherstakecourses (courseid, teacherid) VALUES ($1, $2)'; // Corrected table name
-//     await pool.query(insertQuery, [courseId, teacherid]);
-//     res.status(201).json({ success: 'Teacher assigned successfully' });
-//   } catch (error) {
-//     console.error('Error:', error.message);
-//     res.status(500).json({ error: 'Server Error' });
-//   }
-// });
+    // res.status(201).json({ success: "Course enrolled successfully" });
+    if (result.rowCount === 1) {
+      res.status(201).json({
+        success: "Course enrolled successfully",
+        enrollment: result.rows[0] // Include enrolled course and student IDs in the response
+      });
+    } else {
+      // If rowCount is not 1, it means the insertion failed
+      throw new Error("Failed to enroll in the course");
+    }
+    console.log(result);
+  } catch (error) {
+    res.status(400).json({ error: "Server Error" });
+  }
+});
 
 // Assign teachers to a course
-app.post("/courses/:courseId/assign-teachers", async (req, res) => {
+app.post("/unassigned-courses/assign-teachers", async (req, res) => {
   const courseId = req.params.courseId;
   const { teacherid } = req.body;
   try {
@@ -174,7 +227,7 @@ app.post("/courses/:courseId/assign-teachers", async (req, res) => {
 });
 
 // Remove a teacher from a course
-app.delete("/courses/:courseId/remove-teacher/:teacherid", async (req, res) => {
+app.delete("/assigned-courses/remove-teacher/:teacherid", async (req, res) => {
   const courseId = req.params.courseId;
   const teacherid = req.params.teacherid;
   try {
@@ -189,8 +242,8 @@ app.delete("/courses/:courseId/remove-teacher/:teacherid", async (req, res) => {
 });
 
 // Course-Dashboard
-app.get("/courses/:courseId", async (req, res) => {
-  const courseId = req.params.courseId;
+app.get("/courses/:courseid", async (req, res) => {
+  const courseId = req.params.courseid;
   try {
     const courseQuery = "SELECT * FROM courses WHERE courseid = $1"; // Corrected column name
     const courseResult = await pool.query(courseQuery, [courseId]);
@@ -198,15 +251,21 @@ app.get("/courses/:courseId", async (req, res) => {
       return res.status(404).json({ error: "Course not found" });
     }
     const teachersQuery = `
-          SELECT t.teacherid, t.teacherfirstname, t.teacherlastname
+          SELECT t.teacherid, t.teacherfirstname, t.teacherlastname, t.email
           FROM teachers t
           JOIN teacherstakecourses ttc ON t.teacherid = ttc.teacherid
           WHERE ttc.courseid = $1
         `;
     const teachersResult = await pool.query(teachersQuery, [courseId]);
-    const course = courseResult.rows[0];
+    // const course = courseResult.rows[0];
     const teachers = teachersResult.rows;
-    course.teachers = teachers;
+    // course.teachers = teachers;
+
+    const course = {
+      ...courseResult.rows[0],
+      teachers: teachers,
+    };
+
     res.json(course);
   } catch (error) {
     console.error("Error:", error.message);
@@ -215,7 +274,7 @@ app.get("/courses/:courseId", async (req, res) => {
 });
 
 // Delete a course
-app.delete("/courses/:courseId", async (req, res) => {
+app.delete("/courses/:courseid", async (req, res) => {
   try {
     const { courseId } = req.params;
 
@@ -242,7 +301,7 @@ app.delete("/courses/:courseId", async (req, res) => {
 });
 
 // Updating Course Info
-app.put("/courses/:courseId", async (req, res) => {
+app.put("/courses/:courseid", async (req, res) => {
   try {
     const { courseId } = req.params;
     const { courseName, ects, startDate, endDate, level } = req.body;
@@ -524,6 +583,173 @@ app.get("/teacher-dashboard/:teacherid", async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
+  }
+});
+
+// Define a route to get the number of sessions taken by a specific teacher in a particular course
+app.get("/teachers/:teacherid/courses/:courseid/sessions", async (req, res) => {
+  const { teacherId, courseId } = req.params;
+  try {
+    // Query to retrieve the number of sessions taken by the specified teacher in the course
+    const sessionCountQuery = `
+      SELECT COUNT(sessionid) AS session_count
+      FROM sessions
+      WHERE courseid = $1 AND teacherid = $2
+    `;
+
+    // Execute the query
+    const sessionCountResult = await pool.query(sessionCountQuery, [
+      courseId,
+      teacherId,
+    ]);
+
+    // Send the result as JSON response
+    res.status(201).json({
+      teacherId,
+      courseId,
+      session_count: sessionCountResult.rows[0].session_count,
+    });
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
+// app.get("/teachers/:teacherid/courses/:courseid/payment", async (req, res) => {
+//   const { teacherid, courseid } = req.params;
+
+//   try {
+//     // Query to retrieve the number of sessions taken by the specified teacher in the course
+//     const sessionCountQuery = `
+//       SELECT COUNT(sessionid) AS session_count
+//       FROM sessions
+//       WHERE courseid = $1 AND teacherid = $2
+//     `;
+
+//     // Execute the query to get session count
+//     const sessionCountResponse = await pool.query(sessionCountQuery, [
+//       courseid,
+//       teacherid,
+//     ]);
+//     const sessionCount = sessionCountResponse.rows[0].session_count;
+//     console.log("Session Count:", sessionCount);
+
+//     // Query to retrieve course level and ECTS
+//     const courseQuery = "SELECT level, ects FROM courses WHERE courseid = $1";
+//     const courseResult = await pool.query(courseQuery, [courseid]);
+//     const courseLevel = courseResult.rows[0].level;
+//     const courseEcts = courseResult.rows[0].ects;
+
+//     // const courseResponse = await axios.get(`/courses/${courseid}`);
+//     // const course = courseResponse.data;
+//     // const { courseLevel, courseEcts } = course;
+
+//     console.log("Session Count Response:", sessionCountResponse.data);
+//     console.log("Course Response:", courseResponse.data);
+
+//     // Calculate payment based on course level and ECTS
+//     let paymentPerSession = 0;
+//     switch (courseLevel) {
+//       case "beginner":
+//         paymentPerSession = 500;
+//         break;
+//       case "intermediate":
+//         paymentPerSession = 800;
+//         break;
+//       case "advanced":
+//         paymentPerSession = 1200;
+//         break;
+//       // No default case needed as course level must be one of the specified options
+//     }
+
+//     // Calculate total payment
+//     const totalPayment = sessionCount * paymentPerSession * courseEcts;
+
+//     // Send the result as JSON response
+//     res.json({
+//       session_count: sessionCount,
+//       payment_per_session: paymentPerSession,
+//       total_payment: totalPayment,
+//     });
+//   } catch (error) {
+//     console.error("Error:", error.message);
+//     res.status(500).json({ error: "Server Error" });
+//   }
+// });
+
+app.get("/teachers/:teacherid/courses/:courseid/payment", async (req, res) => {
+  const { teacherid, courseid } = req.params;
+  
+console.log(`course id: ${courseid}`) //works perfectly
+console.log(`teacher id: ${teacherid}`) //works perfectly
+  try {
+    // Query to retrieve the number of sessions taken by the specified teacher in the course
+    const sessionCountQuery = `
+      SELECT COUNT(sessionid) AS session_count
+      FROM sessions
+      WHERE courseid = $1 AND teacherid = $2
+    `;
+    const teacherNameQuery = `
+      SELECT teacherfirstname, teacherlastname from teachers WHERE teacherid = $1`;
+      const teacherNameResult = await pool.query(teacherNameQuery, [teacherid]);
+    // Execute the query to get session count
+    const sessionCountResponse = await pool.query(sessionCountQuery, [
+      courseid,
+      teacherid,
+    ]);
+    const sessionCount = sessionCountResponse.rows[0].session_count;
+
+    // Log the session count
+    console.log("Session Count:", sessionCount);//works perfectly
+
+    // Query to retrieve course level and ECTS
+    const courseQuery = "SELECT level, ects FROM courses WHERE courseid = $1";
+    const courseResult = await pool.query(courseQuery, [courseid]);
+    const courseLevel = courseResult.rows[0].level;
+    const courseEcts = courseResult.rows[0].ects;
+
+    // Log the course level and ECTS
+    console.log("Course Level:", courseLevel);//works perfectly
+    console.log("Course ECTS:", courseEcts);//works perfectly
+
+    // Calculate payment based on course level and ECTS
+    let paymentPerEcts = 0;
+    switch (courseLevel) {
+      case "beginner":
+        paymentPerEcts = 500;
+        break;
+      case "intermediate":
+        paymentPerEcts = 800;
+        break;
+      case "advanced":
+        paymentPerEcts = 1200;
+        break;
+      // No default case needed as course level must be one of the specified options
+    }
+
+    // Log the payment per session
+    console.log("Payment Per Session:", paymentPerEcts);//works perfectly
+    console.log(teacherNameResult.rows[0])
+
+    // Calculate total payment
+    const totalPayment = sessionCount * paymentPerEcts * courseEcts;
+
+    // Log the total payment
+    console.log("Total Payment:", totalPayment);//works perfectly
+
+    // Send the result as JSON response
+    res.status(201).json({
+      session_count: sessionCount,
+      payment_per_ects: paymentPerEcts,
+      total_payment: totalPayment,
+      teacher_name_result: {
+        teacherfirstname: teacherNameResult.rows[0].teacherfirstname,
+        teacherlastname: teacherNameResult.rows[0].teacherlastname
+      }
+    });
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).json({ error: "Server Error" });
   }
 });
 

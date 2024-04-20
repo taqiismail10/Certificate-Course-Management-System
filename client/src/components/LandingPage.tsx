@@ -9,7 +9,7 @@ import CourseBox from './CourseBox/CourseBox'
 const Test = () => {
   return (
 
-    <div className="container-fluid py-4" style={{
+    <div className="container-fluid flex-fill py-5" style={{
       backgroundImage: `url('bg_8(1).jpg')`,
       backgroundSize: "cover",
       backgroundPosition: "center",

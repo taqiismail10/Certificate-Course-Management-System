@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import "../pages/style.css";
-import Navbar_temp from "./Navbar_temp";
 import CourseBox from "./CourseBox/CourseBox";
+import Navbar_temp from "./Navbar_temp";
 
 
 
@@ -17,17 +16,18 @@ const StudentDashboard: React.FC = () => {
       setStudentId(id);
     }
   }, [id]); // Re-run effect whenever the 'id' parameter changes
-  console.log(studentid);
+  // console.log(studentid);
 
   return (
-    <div className="container-fluid vh-100 bg-white">
+    <div className="container-fluid flex-fill py-5 bg-white">
       <Navbar_temp />
       <div className="row justify-content-center align-items-center h-100">
+        {/* studentId = {studentid} */}
         <div className="col-md-10">
           <div className="card shadow w-100 mx-auto" style={{ backgroundColor: "rgba(255, 255, 255, 0.5)", borderRadius: "5px" }}>
             <div className="card-body">
               <h2 className="card-title mb-4 text-center">Student Dashboard</h2>
-              <CourseBox userRole="student"></CourseBox>
+              <CourseBox userRole="student" studentId={studentid}></CourseBox>
             </div>
           </div>
         </div>

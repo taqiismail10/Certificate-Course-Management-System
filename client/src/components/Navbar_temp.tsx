@@ -25,7 +25,7 @@ const Navbar_temp: React.FC = () => {
             window.location.pathname.includes("student-dashboard")
               ? "/student-dashboard/:id"
               : window.location.pathname.includes("teacher-dashboard")
-              ? "/teacher-dashboard/Id"
+              ? "/teacher-dashboard/:id"
               : window.location.pathname.includes("admin-dashboard")
               ? "/admin-dashboard"
               : "/"
